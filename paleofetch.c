@@ -563,6 +563,19 @@ int main(int argc, char *argv[]) {
     FILE *cache_file;
     int read_cache;
 
+#ifndef RIGHT
+#define SHOW printf
+#else
+    int len, off = 0, max = 0;
+    char output[BUF_SIZE * 16];
+#define SHOW(...) \
+    do { \
+        len = snprintf(output + off, BUF_SIZE, __VA_ARGS__); \
+        off += len; \
+        max = len > max ? len : max; \
+    } while (0)
+#endif
+
     status = uname(&uname_info);
     halt_and_catch_fire("uname failed");
     status = sysinfo(&my_sysinfo);
@@ -590,13 +603,13 @@ int main(int argc, char *argv[]) {
     for (int i = 0; i < COUNT(LOGO); i++) {
         // If we've run out of information to show...
         if(i >= COUNT(config) - offset) // just print the next line of the logo
-            printf(COLOR"%s\n", LOGO[i]);
+            SHOW(COLOR"%s\n", LOGO[i]);
         else {
             // Otherwise, we've got a bit of work to do.
             char *label = config[i+offset].label,
                  *value = get_value(config[i+offset], read_cache, cache_data);
             if (strcmp(value, "") != 0) { // check if value is an empty string
-                printf(COLOR"%s%s\e[0m%s\n", LOGO[i], label, value); // just print if not empty
+                SHOW(COLOR"%s%s\e[0m%s\n", LOGO[i], label, value); // just print if not empty
             } else {
                 if (strcmp(label, "") != 0) { // check if label is empty, otherwise it's a spacer
                     ++offset; // print next line of information
@@ -604,7 +617,7 @@ int main(int argc, char *argv[]) {
                     label = config[i+offset].label; // read new label and value
                     value = get_value(config[i+offset], read_cache, cache_data);
                 }
-                printf(COLOR"%s%s\e[0m%s\n", LOGO[i], label, value);
+                SHOW(COLOR"%s%s\e[0m%s\n", LOGO[i], label, value);
             }
             free(value);
 
