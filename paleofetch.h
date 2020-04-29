@@ -7,7 +7,7 @@ static char *get_title(),
             *get_kernel(),
             *get_host(),
             *get_uptime(),
-            *get_packages_pacman(),
+            *get_packages(),
             *get_shell(),
             *get_resolution(),
             *get_terminal(),
@@ -23,3 +23,18 @@ static char *get_title(),
 
 #define SPACER {"", spacer, false},
 #define REMOVE(A) { (A), sizeof(A) - 1}
+
+#if D_arch
+#define PKG_MANAGER "Pacman"
+#define PKG_COMMAND "/bin/pacman", "", "-Qq"
+#endif
+
+#if D_gentoo
+#define PKG_MANAGER "Portage"
+#define PKG_COMMAND "/bin/equery", "", "list", "", "'*'"
+#endif
+
+#if D_debian
+#define PKG_MANAGER "Apt"
+#define PKG_COMMAND "/usr/bin/dpkg-query", "", "-l"
+#endif

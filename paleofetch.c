@@ -204,10 +204,10 @@ static void query_package_database() {
     dup2(package_pipe[1], STDOUT_FILENO);
     close(package_pipe[0]);
     close(package_pipe[1]);
-    execl("/bin/pacman", "", "-Qq", (char *)NULL);
+    execl(PKG_COMMAND, (char *)NULL);
 }
 
-static char *get_packages_pacman() {
+static char *get_packages() {
     int c, num_packages = 0;
     char *packages = malloc(BUF_SIZE);
 
@@ -218,7 +218,7 @@ static char *get_packages_pacman() {
     }
     fclose(output);
 
-    snprintf(packages, BUF_SIZE, "%d (pacman)", num_packages);
+    snprintf(packages, BUF_SIZE, "%d (%s)", num_packages, PKG_MANAGER);
     return packages;
 }
 
